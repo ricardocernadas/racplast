@@ -1,8 +1,26 @@
 <?php
+require 'config/config.php';
 require 'config/database.php';
 
 $db = new Database();
 $con = $db->conectar();
+
+$id = isset($_GET['id']) ? $_GET['id_producto'] : '';
+$token = isset($_GET['token']) ?'';
+
+if($id == '' || $token == ''){
+    echo "Error al procesar la peticion";
+    exit;
+else{
+    $token_tmp = hash_hmac('sha1', $id, KEY_TOKEN);
+    if($token == $token_tmp){
+        $sql = $con -> prepare ("SELECT * FROM productos WHERE id_producto = ?")  ;
+        $sql->execute([$id]);
+        $row = $sql->fetch(PDO::FETCH_ASSOC);
+    }
+}
+}
+
 $sql = $con -> prepare ("SELECT id_producto, nombre, precio FROM productos WHERE activo = 1")  ;
 
 $sql->execute();
