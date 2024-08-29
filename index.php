@@ -64,7 +64,7 @@ $resultado = $sql->fetchAll(PDO::FETCH_ASSOC);
           <div class="card shadow-sm">
             <?php 
             $id = $row['id_producto']; 
-            $imagen = "img/productos/" . $id . "/IMG_7817.jpg";
+            $imagen = "img/productos/" . $id . "/principal.jpg";
 
             if (!file_exists($imagen)) {
                 $imagen = "img/nophoto.jpg";
