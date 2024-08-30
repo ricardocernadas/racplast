@@ -29,9 +29,11 @@ if($id == '' || $token == ''){
 
             $rutaImg = $dir_images . 'principal.jpg';
             if(!file_exists($rutaImg)){
-                $rutaImg = $dir_images . 'img/nophoto.jpg';
+                $rutaImg = 'img/nophoto.jpg';
             }
             $imagenes = array();
+            if(file_exists($dir_images))
+            {
             $dir = dir($dir_images);
             while(($archivo = $dir->read()) !== false){
                 if($archivo != 'principal.jpg' && (strpos($archivo, 'jpg') || strpos($archivo, 'png'))){
@@ -39,6 +41,7 @@ if($id == '' || $token == ''){
                 }
             }
             $dir->close();
+          }
         }
         $row = $sql->fetch(PDO::FETCH_ASSOC);
     }
@@ -76,9 +79,7 @@ if($id == '' || $token == ''){
           <li class="nav-item"><a class="nav-link" href="#">Enterprise</a></li>
           <li class="nav-item"><a class="nav-link" href="#">Support</a></li>
           <li class="nav-item"><a class="nav-link" href="#">Pricing</a></li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <a href="#cart"><img src="img/carticon.png" alt="carrito" class="carrito"></a>
+          <li class="nav-item"><a href="clases/carrito.php" class="btn btn-primary">Carrito<!-- <img src="img/carticon.png" alt="carrito" class="carrito img-fluid "> --><span id="num_cart" class="badge bg-secondary"></span></a>
             </a>
           </li>
         </ul>
@@ -116,15 +117,44 @@ if($id == '' || $token == ''){
       </div>
       <div class="col-md-6">
         <h2><?php echo $nombre; ?></h2>
-        <h3><?php echo MONEDA . number_format($precio, 2, '.', ''); ?></h3>
+        <?php if($descuento > 0) { ?>
+          <p><del><?php echo MONEDA . number_format($precio, 2, '.', ''); ?></del></p>
+          <h2><?php echo MONEDA . number_format($precio_desc, 2, '.', ''); ?>
+        <small class="text-success"> <?php echo $descuento; ?>% OFF</small></small>
+        </h2>
+        <?php } else {?>
+        
+          <h3><?php echo MONEDA . number_format($precio, 2, '.', ''); ?></h3>
+        <?php } ?>
         <p class="lead"><?php echo $descripcion; ?></p>
         <div class="d-grid gap-2">
           <button class="btn btn-primary btn-lg" type="button">Comprar</button>
-          <button class="btn btn-outline-primary btn-lg" type="button">Añadir al carrito</button>
+          <button class="btn btn-outline-primary btn-lg" type="button" onclick = "addProduct(<?php echo $id; ?>, '<?php echo $token_tmp; ?>')">Añadir al carrito</button>
         </div>
       </div>
     </div>
   </div>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  function addProduct(id, token) {
+    let url = 'clases/carrito.php';
+    let formData = new FormData();
+    formData.append('id', id);
+    formData.append('token', token);
+    fetch(url, {
+      method: 'POST',
+      body: formData,
+      mode: 'cors'
+    }).then(response => response.json())
+    .then(data => {
+      if(data.ok) {
+        let elemento = document.getElementById("num_cart");
+        elemento.innerHTML = data.numero;
+      }
+    })
+  }
+</script>
 </body>
 </html>
